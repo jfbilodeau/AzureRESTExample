@@ -74,7 +74,7 @@ begin
 
   RESTCreateResGroupRequest.Params.Clear;
   RESTCreateResGroupRequest.Params.AddItem('Authorization', 'Bearer ' + FConnection.AuthToken, TRESTRequestParameterKind.pkHTTPHEADER, [poDoNotEncode]);
-  RESTCreateResGroupRequest.Params.AddItem('Content-Type', 'application/json', TRESTRequestParameterKind.pkHTTPHEADER, [poDoNotEncode]);
+//  RESTCreateResGroupRequest.Params.AddItem('Content-Type', 'application/json', TRESTRequestParameterKind.pkHTTPHEADER, [poDoNotEncode]);
 //  RESTCreateResGroupRequest.Params.AddItem('Accept', 'application/json', TRESTRequestParameterKind.pkHTTPHEADER);
 
   RESTCreateResGroupRequest.Body.Add('{location:''canadacentral''}', TRESTContentType.ctAPPLICATION_JSON);
@@ -125,9 +125,10 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  {$MESSAGE ERROR 'Enter your subscription id and client id below then delete this line'}
   FConnection := TAzureConnection.Create;
-  FConnection.SubscriptionId := '72453083-3ca3-4638-9779-89eca7e2fd83';
-  FConnection.ClientId := 'c3c9723a-f383-4172-9fca-e1c203d22185';
+  FConnection.SubscriptionId := '<<YOUR SUBSCRIPTION ID>>';
+  FConnection.ClientId := '<<YOUR CLIENT ID>>';
   FConnection.Resource := 'https://management.core.windows.net/';
   FConnection.RedirectURL := 'http://chronogears.com/azure';
   FConnection.AuthorizeEndPoint := 'https://login.microsoftonline.com/common/oauth2/authorize';
