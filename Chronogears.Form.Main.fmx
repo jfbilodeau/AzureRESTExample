@@ -1,0 +1,190 @@
+object MainForm: TMainForm
+  Left = 0
+  Top = 0
+  Caption = 'Auzre REST Management Example'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object CommandLogIn: TButton
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = 'Log In'
+    OnClick = CommandLogInClick
+  end
+  object LabelAuthStatus: TLabel
+    Position.X = 160.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 473.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Not Logged In'
+    TabOrder = 1
+  end
+  object Line1: TLine
+    LineType = Diagonal
+    Position.X = 8.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 625.000000000000000000
+    Size.Height = 1.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object CommandGetResourceGroups: TButton
+    Enabled = False
+    Position.X = 8.000000000000000000
+    Position.Y = 88.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = 'Get Resource Groups'
+    OnClick = CommandGetResourceGroupsClick
+  end
+  object ListResGroup: TListBox
+    Position.X = 424.000000000000000000
+    Position.Y = 144.000000000000000000
+    Size.Width = 208.000000000000000000
+    Size.Height = 289.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    DisableFocusEffect = True
+    DefaultItemStyles.ItemStyle = ''
+    DefaultItemStyles.GroupHeaderStyle = ''
+    DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 204.000000000000000000
+    Viewport.Height = 285.000000000000000000
+  end
+  object LabelRaw: TLabel
+    Position.X = 8.000000000000000000
+    Position.Y = 120.000000000000000000
+    Text = 'Raw Response'
+    TabOrder = 5
+  end
+  object LabelList: TLabel
+    Position.X = 424.000000000000000000
+    Position.Y = 120.000000000000000000
+    Text = 'List'
+    TabOrder = 6
+  end
+  object Line2: TLine
+    LineType = Diagonal
+    Position.X = 7.000000000000000000
+    Position.Y = 440.000000000000000000
+    Size.Width = 625.000000000000000000
+    Size.Height = 1.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object FieldResGroupName: TEdit
+    Touch.InteractiveGestures = [LongTap, DoubleTap]
+    TabOrder = 8
+    Position.X = 8.000000000000000000
+    Position.Y = 448.000000000000000000
+    Size.Width = 225.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object FieldRawResponse: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Locked = True
+    Position.X = 8.000000000000000000
+    Position.Y = 144.000000000000000000
+    Size.Width = 409.000000000000000000
+    Size.Height = 289.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 9
+    Viewport.Width = 405.000000000000000000
+    Viewport.Height = 285.000000000000000000
+  end
+  object CommandCreateResGroup: TButton
+    Enabled = False
+    Position.X = 240.000000000000000000
+    Position.Y = 448.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 10
+    Text = 'Create Resource Group'
+    OnClick = CommandCreateResGroupClick
+  end
+  object CommandGetAccessToken: TButton
+    Enabled = False
+    Position.X = 8.000000000000000000
+    Position.Y = 48.000000000000000000
+    Size.Width = 145.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 11
+    Text = 'Get Access Token'
+    OnClick = CommandGetAccessTokenClick
+  end
+  object LabelToken: TLabel
+    Position.X = 160.000000000000000000
+    Position.Y = 48.000000000000000000
+    Size.Width = 473.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'No Access Token'
+    TabOrder = 12
+  end
+  object Line3: TLine
+    LineType = Diagonal
+    Position.X = 7.000000000000000000
+    Position.Y = 80.000000000000000000
+    Size.Width = 625.000000000000000000
+    Size.Height = 1.000000000000000000
+    Size.PlatformDefault = False
+  end
+  object RESTTokenRequest: TRESTRequest
+    Client = RESTClient
+    Params = <>
+    Response = RESTTokenResponse
+    OnAfterExecute = RESTTokenRequestAfterExecute
+    SynchronizedEvents = False
+    Left = 56
+    Top = 224
+  end
+  object RESTTokenResponse: TRESTResponse
+    Left = 56
+    Top = 280
+  end
+  object RESTListResGroupRequest: TRESTRequest
+    Client = RESTClient
+    Params = <>
+    Response = RESTListResGroupResponse
+    OnAfterExecute = RESTListResGroupRequestAfterExecute
+    SynchronizedEvents = False
+    Left = 208
+    Top = 224
+  end
+  object RESTClient: TRESTClient
+    Params = <>
+    HandleRedirects = True
+    Left = 56
+    Top = 168
+  end
+  object RESTListResGroupResponse: TRESTResponse
+    Left = 208
+    Top = 280
+  end
+  object RESTCreateResGroupRequest: TRESTRequest
+    Client = RESTClient
+    Params = <>
+    Response = RESTCreateResGroupResponse
+    OnAfterExecute = RESTCreateResGroupRequestAfterExecute
+    SynchronizedEvents = False
+    Left = 376
+    Top = 224
+  end
+  object RESTCreateResGroupResponse: TRESTResponse
+    Left = 376
+    Top = 280
+  end
+end
