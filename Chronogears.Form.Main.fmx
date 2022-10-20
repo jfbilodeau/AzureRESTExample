@@ -166,7 +166,6 @@ object MainForm: TMainForm
   end
   object RESTClient: TRESTClient
     Params = <>
-    HandleRedirects = True
     Left = 56
     Top = 168
   end

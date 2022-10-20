@@ -5,8 +5,10 @@ interface
 type
   TAzureConnection = class
   public
+    TenantId: string;
     SubscriptionId: string;
     ClientId: string;
+    ClientSecret: string;
     Resource: string;
     RedirectURL: string;
     AuthorizeEndPoint: string;

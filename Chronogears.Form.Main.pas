@@ -8,7 +8,8 @@ uses
   FMX.Controls.Presentation, FMX.Layouts, FMX.ListBox, FMX.Objects,
   FMX.ScrollBox, FMX.Memo, FMX.Edit, IPPeerClient,
   Chronogears.Azure.Model, Chronogears.Form.Authorize, Data.Bind.Components,
-  Data.Bind.ObjectScope, REST.Client, REST.Types, REST.Json, System.JSON;
+  Data.Bind.ObjectScope, REST.Client, REST.Types, REST.Json, System.JSON,
+  FMX.Memo.Types;
 
 type
   TMainForm = class(TForm)
@@ -33,6 +34,7 @@ type
     RESTListResGroupResponse: TRESTResponse;
     RESTCreateResGroupRequest: TRESTRequest;
     RESTCreateResGroupResponse: TRESTResponse;
+
     procedure FormCreate(Sender: TObject);
     procedure CommandLogInClick(Sender: TObject);
     procedure CommandGetAccessTokenClick(Sender: TObject);
@@ -55,6 +57,9 @@ implementation
 
 {$R *.fmx}
 
+uses
+  System.NetEncoding, System.Net.URLClient;
+
 procedure TMainForm.CommandCreateResGroupClick(Sender: TObject);
 var
   LResource: string;
@@ -74,8 +79,6 @@ begin
 
   RESTCreateResGroupRequest.Params.Clear;
   RESTCreateResGroupRequest.Params.AddItem('Authorization', 'Bearer ' + FConnection.AuthToken, TRESTRequestParameterKind.pkHTTPHEADER, [poDoNotEncode]);
-//  RESTCreateResGroupRequest.Params.AddItem('Content-Type', 'application/json', TRESTRequestParameterKind.pkHTTPHEADER, [poDoNotEncode]);
-//  RESTCreateResGroupRequest.Params.AddItem('Accept', 'application/json', TRESTRequestParameterKind.pkHTTPHEADER);
 
   RESTCreateResGroupRequest.Body.Add('{location:''canadacentral''}', TRESTContentType.ctAPPLICATION_JSON);
 
@@ -87,11 +90,16 @@ begin
   RestClient.BaseURL := FConnection.TokenEndPoint;
 
   RESTTokenRequest.Method := TRESTRequestMethod.rmPOST;
-  RESTTokenRequest.Params.AddItem('grant_type', 'authorization_code', TRESTRequestParameterKind.pkGetOrPost);
-  RESTTokenRequest.Params.AddItem('client_id', FConnection.ClientId, TRESTRequestParameterKind.pkGetOrPost);
-  RESTTokenRequest.Params.AddItem('code', FConnection.AuthCode, TRESTRequestParameterKind.pkGetOrPost);
-  RESTTokenRequest.Params.AddItem('redirect_uri', FConnection.RedirectURL, TRESTRequestParameterKind.pkGetOrPost);
-  RESTTokenRequest.Params.AddItem('resource', FConnection.Resource, TRESTRequestParameterKind.pkGetOrPost, [poDoNotEncode]);
+
+  RESTTokenRequest.Params.AddItem('client_id', FConnection.ClientId, TRestRequestParameterKind.pkQUERY);
+
+  RESTTokenRequest.Params.AddItem('grant_type', 'authorization_code', TRestRequestParameterKind.pkREQUESTBODY);
+  RESTTokenRequest.Params.AddItem('client_id', FConnection.ClientId, TRestRequestParameterKind.pkREQUESTBODY);
+  RESTTokenRequest.Params.AddItem('code', FConnection.AuthCode, TRestRequestParameterKind.pkREQUESTBODY);
+  RESTTokenRequest.Params.AddItem('client_secret', FConnection.ClientSecret, TRestRequestParameterKind.pkREQUESTBODY);
+  RESTTokenRequest.Params.AddItem('resource', FConnection.Resource, TRestRequestParameterKind.pkREQUESTBODY);
+//  RESTTokenRequest.Params.AddItem('scope', 'openid', TRestRequestParameterKind.pkREQUESTBODY);
+  RESTTokenRequest.Params.AddItem('redirect_uri', FConnection.RedirectURL, TRestRequestParameterKind.pkREQUESTBODY);
 
   Cursor := crHourGlass;
   RESTTokenRequest.ExecuteAsync;
@@ -125,14 +133,16 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  {$MESSAGE ERROR 'Enter your subscription id and client id below then delete this line'}
+  {$MESSAGE ERROR 'Enter your tenant id, subscription id, client id, and client secret below then delete this line'}
   FConnection := TAzureConnection.Create;
-  FConnection.SubscriptionId := '<<YOUR SUBSCRIPTION ID>>';
-  FConnection.ClientId := '<<YOUR CLIENT ID>>';
+  FConnection.TenantId := '<<TENANT ID>>';
+  FConnection.SubscriptionId := '<<SUBSCRIPTION ID>>';
+  FConnection.ClientId := '<<CLIENT ID';
+  FConnection.ClientSecret := '<<CLIENT SECRET>>';
   FConnection.Resource := 'https://management.core.windows.net/';
-  FConnection.RedirectURL := 'http://chronogears.com/azure';
-  FConnection.AuthorizeEndPoint := 'https://login.microsoftonline.com/common/oauth2/authorize';
-  FConnection.TokenEndPoint := 'https://login.microsoftonline.com/common/oauth2/token';
+  FConnection.RedirectURL := 'https://chronogears.com/azure';
+  FConnection.AuthorizeEndPoint := 'https://login.microsoftonline.com/' + FConnection.TenantId + '/oauth2/v2.0/authorize';
+  FConnection.TokenEndPoint := 'https://login.microsoftonline.com/' + FConnection.TenantId + '/oauth2/token';
   FConnection.RESTEndPoint := 'https://management.azure.com';
 end;
 
@@ -167,12 +177,17 @@ procedure TMainForm.RESTTokenRequestAfterExecute(Sender: TCustomRESTRequest);
 begin
   Cursor := crArrow;
 
-  FConnection.AuthToken := RESTTokenResponse.JSONValue.GetValue<String>('access_token');
+  if RESTTokenResponse.StatusCode = 200 then
+  begin
+    FConnection.AuthToken := RESTTokenResponse.JSONValue.GetValue<String>('access_token');
 
-  LabelToken.Text := 'Access Token: ' + FConnection.AuthToken.Substring(0, 8) + '...';
+    LabelToken.Text := 'Access Token: ' + FConnection.AuthToken.Substring(0, 8) + '...';
 
-  CommandGetResourceGroups.Enabled := True;
-  CommandCreateResGroup.Enabled := True;
+    CommandGetResourceGroups.Enabled := True;
+    CommandCreateResGroup.Enabled := True;
+  end else begin
+    MessageDlg(RESTTokenResponse.Content, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0);
+  end;
 end;
 
 end.

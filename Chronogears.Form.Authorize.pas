@@ -43,9 +43,9 @@ begin
     '&response_type=code' +
     '&redirect_uri=' + TNetEncoding.URL.Encode(FConnection.RedirectURL) +
     '&response_mode=query' +
-    '&scope=openid' +
     '&state=1' +
-    '&resource=' + TNetEncoding.URL.Encode(FConnection.Resource);
+    '&scope=openid';
+    //'&scope=' + TNetEncoding.URL.Encode(FConnection.Resource);
 
   WebBrowser.URL := LURL;
 
